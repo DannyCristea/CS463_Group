@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="main_text text-muted">
+  <p><strong>Welcome to our streaming guide! </strong></p><p>As movie buffs themselves,
+    they all share the same vision and passion for streamit app,
+    an app that can give movie fans around the world all
+    they can ever ask for about their favorite movies.</p>
+</div>
+
+<div class="container">
+    <div class="jumbotron">
+        <h3 class="text-center search_font">Search For Any Movie</h3>
+        <form id="searchForm" class="padding">
+            <input type="text" class="form-control" id="searchText" placeholder="Search Movies...">
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div id="movies" class="row"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="js/main.js"></script>
+
+
+{% endblock %}

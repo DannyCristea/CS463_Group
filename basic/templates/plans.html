@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/plans.css') }}" media="screen" />
+<div class="plans_font text-muted">
+  <p>You can cancel your subscription at any time. No hidden fees.</p>
+</div>
+ <div class="background">
+  <div class="container">
+
+    <div class="panel table-pricing">
+
+      <!-- 1st pricing plan -->
+      <div class="plan">
+        <img src="{{url_for('static', filename='movie.png')}}" alt="" class="pricing-img">
+        <!-- Movie (movie.png) created by businessicons13 from the Noun Project -->
+        <h2 class="pricing-header">Standard</h2>
+        <ul class="plan-attributes">
+          <li class="single-attribute">1080p Resolution</li>
+          <li class="single-attribute">Watch on 2 devices</li>
+          <li class="single-attribute">Unlimited Offline viewing</li>
+        </ul>
+        <span class="price">$8.99</span>
+        <!-- <a href="thankyou.html" class="button">Select</a> -->
+        <a href="#" id='standard' class="button paybtn">Select</a>
+      </div>
+
+      <!-- 2nd pricing plan -->
+      <div class="plan">
+        <img src="{{url_for('static', filename='movie2.png')}}" alt="" class="pricing-img">
+        <!--Movie (movie2.png) created by nauraicon from the Noun Project -->
+        <h2 class="pricing-header">Premium</h2>
+        <ul class="plan-attributes">
+          <li class="single-attribute">4K Resolution</li>
+          <li class="single-attribute">Watch on 2 devices</li>
+          <li class="single-attribute">Limited Offline viewing</li>
+
+        </ul>
+        <span class="price">$12.99</span>
+        <!-- <a href="#/" class="button">Select</a> -->
+        <a href="#" id='premium' class="button paybtn">Select</a>
+      </div>
+
+      <!-- 3rd pricing plan -->
+      <div class="plan">
+        <img src="{{url_for('static', filename='movie3.png')}}" alt="" class="pricing-img">
+        <!--Movie (movie3.png) created by supalerk laipawat from the Noun Project-->
+        <h2 class="pricing-header">Premium+</h2>
+        <ul class="plan-attributes">
+          <li class="single-attribute">4K Resolution</li>
+          <li class="single-attribute">Watch on 5 devices</li>
+          <li class="single-attribute">Unlimited Offline viewing</li>
+
+        </ul>
+        <span class="price">$16.99</span>
+        <!-- <a href="#/" class="button">Select</a> -->
+        <a href="#" id='premium-plus' class="button paybtn">Select</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+$(document).ready(function(){
+var purchasedPlan = "";
+var purchaseAmount = "";
+var options = {
+    "key": "rzp_test_MY9PBjGDSugUcd", // Enter the Key ID generated from the Dashboard
+    "amount": "", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "USD",
+    "name": "StreamIt subscription",
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": "", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        // alert(response.razorpay_payment_id);
+        // alert(response.razorpay_order_id);
+        // alert(response.razorpay_signature);
+        data = {'razorpay_payment_id':response.razorpay_payment_id, 'razorpay_order_id':response.razorpay_order_id, 'razorpay_signature':response.razorpay_signature, 'plan_name':purchasedPlan, 'order_amount':purchaseAmount}
+        $.ajax({
+          type: 'POST',
+          url: '/payment-handle',
+          contentType: 'application/json;charset=UTF-8',
+          data: JSON.stringify(data),
+          dataType: "json",
+          success: function(data){
+            // debugger
+            alert("payment successful");
+          },
+          error: function(data){
+            console.log("An error occured")
+            alert(data);
+            window.location.href = "/"
+          }
+        });
+    },
+    "prefill": {
+        "name": "Matthew James",
+        "email": "matthew.james@example.com",
+        "contact": "+14087678000"
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+$('.paybtn').on("click", function(e){
+    // debugger
+    var localthis = e.target
+    var data = {'plan-name':localthis.id}
+    purchasedPlan = localthis.id
+    $.ajax({
+      type: 'POST',
+      url: '/purchase-plan',
+      contentType: 'application/json;charset=UTF-8',
+      data: JSON.stringify(data),
+      dataType: "json",
+      success: function(data){
+        result = data
+        purchaseAmount = result['order-amount']
+        options['amount'] = result['order-amount']
+        options['order_id'] = result['order-id']
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+        rzp1.on('payment.failed', function (response){
+                alert(response.error.code);
+                alert(response.error.description);
+                alert(response.error.source);
+                alert(response.error.step);
+                alert(response.error.reason);
+                alert(response.error.metadata.order_id);
+                alert(response.error.metadata.payment_id);
+        });
+        // e.preventDefault();
+      },
+      error: function(data){
+        console.log("An error occured")
+        alert(data);
+        window.location.href = "/"
+      }
+    });
+});
+
+});
+</script>
+{% endblock %}
