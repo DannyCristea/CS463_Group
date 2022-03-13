@@ -10,6 +10,9 @@ function getMovies(searchText) {
     axios.get('http://www.omdbapi.com?s=' + searchText + '&apikey=69d9a1b')
         .then((response) => {
             console.log(response);
+            if (response.data.Response == "False") {
+              alert("No movies found!");
+            }            
             let movies = response.data.Search;
             let output = '';
             $.each(movies, (index, movie) => {
